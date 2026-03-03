@@ -51,7 +51,7 @@ router.beforeEach(async (to: RouteLocationNormalized, from: RouteLocationNormali
         //获取userInfo
         const { data }: any = await userStore.getInfo()
         const role = []
-        role.push(data.role)
+        role.push(data.data.role)
         devLog("this is role", role)
         //根据角色生成路由并存到pinia
         const accessRoutes = await routesStore.generateRoutes(role)

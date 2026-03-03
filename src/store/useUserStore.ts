@@ -46,7 +46,7 @@ export const useUserStore = defineStore(Names.USERSTORE, {
         getInfo().then(response => {
 
           //response.data  = response
-          const data = response.data
+          const data = response.data.data
           if (!data) {
             reject("验证失败请重新登录")
           }
