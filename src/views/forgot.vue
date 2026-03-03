@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1>忘记密码</h1>
+        <h1>更改密码</h1>
         <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" label-width="120px">
             <el-form-item label="邮箱" prop="email">
                 <el-input v-model="ruleForm.email" placeholder="输入邮箱" style=" width:300px;margin-left: 20px;"></el-input>
@@ -82,7 +82,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (!formEl) return
     await formEl.validate((valid, fields) => {
         if (valid) {
-            resetPassword(ruleForm.email, ruleForm.password, ruleForm.email).then(response => {
+            resetPassword(ruleForm.email, ruleForm.password, ruleForm.code).then(response => {
                 if(response.status === 200){
                     ElMessage.success('更改成功')
                 }

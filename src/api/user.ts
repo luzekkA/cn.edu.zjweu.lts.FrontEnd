@@ -40,6 +40,16 @@ export function getCode(email:any){
     })
 }
 
+export function addEmail(email:any){
+    return request({
+        url: '/User/AddEmail',
+        method: 'post',
+        params: {
+            email: email
+        }
+    })
+}
+
 export function resetPassword(email:any,newPassword:any,resetCode:any){
     return request({
         url: '/User/resetPassword',

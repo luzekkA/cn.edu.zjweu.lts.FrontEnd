@@ -114,7 +114,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
                 path: 'search',
                 name: "搜索题目",
                 component: () => import('../views/admin/topic/index.vue'),
-            },{
+            }, {
                 path: 'detail',
                 name: "题目详情",
                 meta: {
@@ -239,6 +239,21 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
 
 
         ]
+    }
+    , {
+        path: "/User",
+        component: () => import('../views/Layout/index.vue'),
+        meta: {
+            name: '用户信息',
+            icon: 'HomeFilled',
+            hidden: true
+        },
+        children: [
+            {
+                path: '',
+                name: "用户信息",
+                component: () => import('../views/userInfo.vue'),
+            },]
     }
 ]
 //静态路由直接添加到router

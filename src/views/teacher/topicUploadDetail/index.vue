@@ -146,7 +146,10 @@ const upload = (uploadInfo: any) => {
 }
 
 const calculate = () => {
-    CaclSimilarity(TopicId, ClassId).then(data => {
+    let formData = new FormData();
+    formData.append("TopicId", TopicId?.toString()||'');
+    formData.append("ClassId", ClassId?.toString()||'');
+    CaclSimilarity(formData).then(data => {
         devLog("this is data", data)
 
         if (data.data.code == 200) {

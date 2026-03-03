@@ -69,11 +69,11 @@ export function UpdateTopic(formData: any) {
     })
 }
 // 计算相似度
-export function CaclSimilarity(TopicId: any,ClassId:any) {
+export function CaclSimilarity(formData: any) {
     return request({
         url: '/Teacher/CaclSimilarity',
         method: 'patch',
-        params:{TopicId,ClassId}
+        data:formData,
         // headers: {
         //     'Content-Type': 'multipart/form-data'
         //   }
