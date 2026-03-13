@@ -45,12 +45,10 @@ import { getReport,makeScore } from '../../../api/teacher'
 import { devLog } from '../../../utils/devLog';
 import { useRoute } from 'vue-router'
 import { useUserStore } from '../../../store/useUserStore';
-import VueOfficeExcel from '@vue-office/excel'
-import '@vue-office/excel/lib/index.css'
-import VueOfficeDocx from '@vue-office/docx'
-import '@vue-office/docx/lib/index.css'
+import VueOfficeExcel from '@vue-office/excel/lib/v3/index.js'
+import VueOfficeDocx from '@vue-office/docx/lib/v3/index.js'
 //引入VueOfficePdf组件
-import VueOfficePdf from '@vue-office/pdf'
+import VueOfficePdf from '@vue-office/pdf/lib/v3/index.js'
 import { ElMessage } from 'element-plus';
 const options = {
     xls: false, //预览xlsx文件设为false；预览xls文件设为true

@@ -3,8 +3,5 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
-  optimizeDeps: {
-    include: ['@vue-office/excel', '@vue-office/docx', '@vue-office/pdf']
-  }
+  plugins: [vue()]
 })

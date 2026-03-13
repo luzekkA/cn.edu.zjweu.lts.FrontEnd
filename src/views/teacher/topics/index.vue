@@ -62,12 +62,10 @@ import { getTopics, UpdateTopic } from '../../../api/teacher';
 import { devLog } from '../../../utils/devLog';
 import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus';
-import VueOfficeExcel from '@vue-office/excel'
-import '@vue-office/excel/lib/index.css'
-import VueOfficeDocx from '@vue-office/docx'
-import '@vue-office/docx/lib/index.css'
+import VueOfficeExcel from '@vue-office/excel/lib/v3/index.js'
+import VueOfficeDocx from '@vue-office/docx/lib/v3/index.js'
 //引入VueOfficePdf组件
-import VueOfficePdf from '@vue-office/pdf'
+import VueOfficePdf from '@vue-office/pdf/lib/v3/index.js'
 const options = {
     xls: false, //预览xlsx文件设为false；预览xls文件设为true
     minColLength: 0, // excel最少渲染多少列，如果想实现xlsx文件内容有几列，就渲染几列，可以将此值设置为0.

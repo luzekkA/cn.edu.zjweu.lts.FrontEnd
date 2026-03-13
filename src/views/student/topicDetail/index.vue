@@ -144,12 +144,10 @@ import { onMounted, ref, reactive } from 'vue'
 import { devLog } from '../../../utils/devLog';
 import { useUserStore } from '../../../store/useUserStore';
 import { ElMessage, type FormInstance } from 'element-plus'
-import VueOfficeExcel from '@vue-office/excel'
-import '@vue-office/excel/lib/index.css'
-import VueOfficeDocx from '@vue-office/docx'
-import '@vue-office/docx/lib/index.css'
+import VueOfficeExcel from '@vue-office/excel/lib/v3/index.js'
+import VueOfficeDocx from '@vue-office/docx/lib/v3/index.js'
 //引入VueOfficePdf组件
-import VueOfficePdf from '@vue-office/pdf'
+import VueOfficePdf from '@vue-office/pdf/lib/v3/index.js'
 
 const options = {
     xls: false, //预览xlsx文件设为false；预览xls文件设为true
