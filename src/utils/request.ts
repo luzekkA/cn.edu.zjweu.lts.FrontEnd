@@ -14,7 +14,7 @@ else if (settings.env == Env.Dev) {
 }
 const service: AxiosInstance = axios.create({
     baseURL: baseURL,
-    timeout: 5000
+    // timeout: 5000
 })
 
 service.interceptors.request.use(

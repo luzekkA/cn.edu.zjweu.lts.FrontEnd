@@ -1,14 +1,14 @@
 <template>
     <el-row>
         <el-col :span="12">
-            <div style="margin-left: 20px;" v-if="topicExtension == 'xls' || topicExtension == 'xlsx'">
-                <vue-office-excel :src="text" :options="options" style="height: 650px; " />
+            <div style="margin-left: 20px; width: 100%; height: 650px; overflow: auto;" v-if="topicExtension == 'xls' || topicExtension == 'xlsx'">
+                <vue-office-excel :src="text" :options="options" style="height: 100%;" />
             </div>
-            <div style="margin-left: 20px;" v-if="topicExtension == 'doc' || topicExtension == 'docx'">
-                <vue-office-docx :src="text" style="height: 650px; " />
+            <div style="margin-left: 20px; width: 100%; height: 650px; overflow: auto;" v-if="topicExtension == 'doc' || topicExtension == 'docx'">
+                <vue-office-docx :src="text" style="height: 100%;" />
             </div>
-            <div style="margin-left: 20px;" v-if="topicExtension == 'pdf'">
-                <vue-office-pdf :src="text" style="height: 650px; " />
+            <div style="margin-left: 20px; width: 100%; height: 650px; overflow: auto;" v-if="topicExtension == 'pdf'">
+                <vue-office-pdf :src="text" style="height: 100%;" />
             </div>
         </el-col>
         <el-col :span="12">
@@ -18,7 +18,7 @@
                 <h2 style="margin-left: 50px;">题目标题：{{ reportInfo?.Topic?.Title }}</h2>
             </el-row>
             <el-row>
-                <el-table :data="reportInfo?.Students" style="width: 100%">
+                <el-table :data="reportInfo?.Student ? [reportInfo.Student] : []" style="width: 100%">
                     <el-table-column prop="Id" label="Id" />
                     <el-table-column prop="UserName" label="学生姓名" />
                 </el-table>
@@ -52,10 +52,10 @@ import VueOfficePdf from '@vue-office/pdf/lib/v3/index.js'
 import { ElMessage } from 'element-plus';
 const options = {
     xls: false, //预览xlsx文件设为false；预览xls文件设为true
-    minColLength: 0, // excel最少渲染多少列，如果想实现xlsx文件内容有几列，就渲染几列，可以将此值设置为0.
-    minRowLength: 0, // excel最少渲染多少行，如果想实现根据xlsx实际函数渲染，可以将此值设置为0.
-    widthOffset: 10, //如果渲染出来的结果感觉单元格宽度不够，可以在默认渲染的列表宽度上再加 Npx宽
-    heightOffset: 10, //在默认渲染的列表高度上再加 Npx高
+    minColLength: 3, // excel最少渲染多少列
+    minRowLength: 10, // excel最少渲染多少行
+    widthOffset: 0, //移除额外宽度
+    heightOffset: 0, //移除额外高度
     beforeTransformData: (workbookData: any) => workbookData,
     transformData: (workbookData: any) => workbookData //将获取到的excel数据进行处理之后且渲染到页面之前，可通过transformData对即将渲染的数据及样式进行修改，此时每个单元格的text值就是即将渲染到页面上的内容
 };
@@ -79,7 +79,7 @@ interface ReportInfo{
     Similarity:string;
     Status:string;
     Topic:Topic;
-    Students:Student[]
+    Student:Student;
 
 }
 let reportInfo = ref<ReportInfo>()
@@ -87,6 +87,11 @@ let mytoken = ref('')
 mytoken.value = userStore.token
 const route = useRoute()
 const ReportId = route.query.ReportId
+const CourseId = route.query.CourseId
+const ClassId = route.query.ClassId
+const TopicId = route.query.TopicId
+const TopicName = route.query.TopicName
+const UserName = route.query.UserName
 
 const topicExtension = ref('')
 //const topicFilePath = ref('')

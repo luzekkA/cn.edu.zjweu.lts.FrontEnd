@@ -32,7 +32,18 @@
                 </el-table-column>
                 <el-table-column label="操作">
                     <template #default="scope">
-                        <router-link :to="{ path: '/Teacher/ReportDetail', query: { ReportId : reportedStudentList.find((student: any) => student.Id === scope.row.Id)?.Report[reportedStudentList.find((student: any) => student.Id === scope.row.Id).Report.length-1].Id } } ">
+                        <router-link :to="{
+                            path: '/Teacher/ReportDetail',
+                            query: {
+                                ReportId: reportedStudentList.find((student: any) => student.Id === scope.row.Id)?.Report[reportedStudentList.find((student: any) => student.Id === scope.row.Id).Report.length-1].Id,
+                                CourseId: CourseId,
+                                CourseName: CourseName,
+                                ClassId: ClassId,
+                                TopicId: TopicId,
+                                TopicName: route.query.TopicName,
+                                UserName: scope.row.UserName
+                            }
+                        }">
                         <!-- <router-link :to="{ path: '/Teacher/ReportDetail', query: { TopicId: 1 } }"> -->
                             <!-- this is report {{ reportedStudentList.find((student: any) => student.Id === scope.row.Id).Report[reportedStudentList.find((student: any) => student.Id === scope.row.Id).Report.length-1].Id }} -->
                             <el-button type="primary" size="large" @click=""
@@ -85,6 +96,7 @@ const route = useRoute()
 const CourseId = route.query.CourseId
 const ClassId = route.query.ClassId
 const TopicId = route.query.TopicId
+const CourseName = route.query.CourseName
 
 // let submissionData: {
 //     '已提交': 10,
@@ -153,7 +165,7 @@ const calculate = () => {
         devLog("this is data", data)
 
         if (data.data.code == 200) {
-            ElMessage.success('计算相似度成功')
+            ElMessage.success(data.data.msg)
         }
         else {
             ElMessage.error('计算相似度失败')

@@ -7,7 +7,7 @@
 
     <el-col :span="5" v-for="(item, index) in CoursesList.filter(item => item.Name.includes(keyword))"
       :offset="index % 4 > 0 ? 1 : 0">
-      <router-link :to="{ path: '/Teacher/ClassList', query: { CourseId: item.Id } }">
+      <router-link :to="{ path: '/Teacher/ClassList', query: { CourseId: item.Id, CourseName: item.Name } }">
         <div class="myClass">
           <div style="float: left; position: absolute; top:0px; left: 20px; z-index: 2; ">
             <h3 style="color:#fff;">{{ item.Name }}</h3>

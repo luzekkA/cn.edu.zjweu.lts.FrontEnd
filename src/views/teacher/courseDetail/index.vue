@@ -4,7 +4,7 @@
             <el-button @click="rightPart = true">添加题目到题库</el-button>
         </el-col>
         <el-col :span="6" style="text-align: left;">
-            <router-link :to="{ path: '/Teacher/topics', query: { CourseId: CourseId } }">
+            <router-link :to="{ path: '/Teacher/Topics', query: { CourseId: CourseId, CourseName: CourseName } }">
                 <el-button>查看题库</el-button>
             </router-link>
         </el-col>
@@ -16,7 +16,7 @@
         <el-table-column label="操作">
             <template #default="scope">
                 <router-link
-                    :to="{ path: '/Teacher/ClassDetail', query: { ClassId: scope.row.Id, CourseId: CourseId } }">
+                    :to="{ path: '/Teacher/ClassDetail', query: { ClassId: scope.row.Id, CourseId: CourseId, CourseName: CourseName } }">
                     <el-button size="large" @click="">
                         进入班级
                     </el-button>
@@ -96,6 +96,7 @@ let mytoken = ref('')
 const route = useRoute()
 mytoken.value = userStore.token
 const CourseId = route.query.CourseId
+const CourseName = route.query.CourseName
 onMounted(() => {
     getClassList(CourseId, currentPage.value).then(data => {
         topicList.value = data.data.data.Items

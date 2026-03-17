@@ -56,6 +56,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
     {
         path: "/editUser",
         component: () => import('../views/Layout/index.vue'),
+        redirect: '/editUser/search',
         meta: {
             name: '搜索用户',
             roles: ['ADMIN'],
@@ -71,7 +72,8 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
                 path: 'detail',
                 name: "用户详情",
                 meta: {
-                    hidden: true
+                    hidden: true,
+                    name: '用户详情'
                 },
                 component: () => import('../views/admin/user/detail.vue'),
             }
@@ -80,6 +82,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
     {
         path: "/editCourses",
         component: () => import('../views/Layout/index.vue'),
+        redirect: '/editCourses/index',
         meta: {
             name: '搜索课程',
             roles: ['ADMIN'],
@@ -104,6 +107,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
     {
         path: "/editTopic",
         component: () => import('../views/Layout/index.vue'),
+        redirect: '/editTopic/search',
         meta: {
             name: '搜索题目',
             roles: ['ADMIN'],
@@ -118,7 +122,8 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
                 path: 'detail',
                 name: "题目详情",
                 meta: {
-                    hidden: true
+                    hidden: true,
+                    name: '题目详情'
                 },
                 component: () => import('../views/admin/topic/detail.vue'),
             }
@@ -127,6 +132,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
     {
         path: "/editClass",
         component: () => import('../views/Layout/index.vue'),
+        redirect: '/editClass/index',
         meta: {
             name: '搜索班级',
             roles: ['ADMIN'],
@@ -144,6 +150,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
     {
         path: "/Student",
         component: () => import('../views/Layout/index.vue'),
+        redirect: '/Student',
         meta: {
             name: '我的课程',
             roles: ['STUDENT'],
@@ -159,7 +166,8 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
                 path: 'CourseTopic',
                 name: "课程题目",
                 meta: {
-                    hidden: true
+                    hidden: true,
+                    name: '课程题目'
                 },
                 component: () => import('../views/student/topicList/index.vue'),
             }
@@ -167,7 +175,8 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
                 path: 'TopicDetail',
                 name: "题目",
                 meta: {
-                    hidden: true
+                    hidden: true,
+                    name: '题目详情'
                 },
                 component: () => import('../views/student/topicDetail/index.vue'),
             }
@@ -176,6 +185,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
     {
         path: "/Teacher",
         component: () => import('../views/Layout/index.vue'),
+        redirect: '/Teacher',
         meta: {
             name: '课程列表',
             roles: ['TEACHER'],
@@ -191,7 +201,8 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
                 path: 'ClassList',
                 name: "课程详情",
                 meta: {
-                    hidden: true
+                    hidden: true,
+                    name: '课程详情'
                 },
                 component: () => import('../views/teacher/courseDetail/index.vue'),
             },
@@ -199,24 +210,29 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
                 path: 'ClassDetail',
                 name: "班级详情",
                 meta: {
-                    hidden: true
+                    hidden: true,
+                    name: '班级详情'
                 },
                 component: () => import('../views/teacher/classDetail/index.vue'),
+                children: [
+                    
+                ]
             },
             {
                 path: 'TopicUploadDetail',
                 name: "题目提交详情",
                 meta: {
-                    hidden: true
+                    hidden: true,
+                    name: '题目提交详情'
                 },
                 component: () => import('../views/teacher/topicUploadDetail/index.vue'),
-            }
-            ,
+            },
             {
                 path: 'ReportDetail',
                 name: "报告详情",
                 meta: {
-                    hidden: true
+                    hidden: true,
+                    name: '报告详情'
                 },
                 component: () => import('../views/teacher/reportDetail/index.vue'),
             },
@@ -224,7 +240,8 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
                 path: 'Topics',
                 name: "题库",
                 meta: {
-                    hidden: true
+                    hidden: true,
+                    name: '题库'
                 },
                 component: () => import('../views/teacher/topics/index.vue'),
             }
@@ -243,6 +260,7 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
     , {
         path: "/User",
         component: () => import('../views/Layout/index.vue'),
+        redirect: '/User',
         meta: {
             name: '用户信息',
             icon: 'HomeFilled',
