@@ -273,6 +273,23 @@ export const asyncRoutes: Array<RouteRecordRaw> = [
                 component: () => import('../views/userInfo.vue'),
             },]
     }
+    , {
+        path: "/Agent",
+        component: () => import('../views/Layout/index.vue'),
+        redirect: '/Agent/index',
+        meta: {
+            name: '智能体问答',
+            roles: ['ADMIN', 'TEACHER', 'STUDENT'],
+            icon: 'ChatDotRound'
+        },
+        children: [
+            {
+                path: 'index',
+                name: "智能体问答",
+                component: () => import('../views/common/agent/index.vue'),
+            }
+        ]
+    }
 ]
 //静态路由直接添加到router
 let router = createRouter({
