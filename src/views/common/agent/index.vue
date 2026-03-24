@@ -64,7 +64,7 @@
                                 <el-option
                                     v-for="topic in topicList"
                                     :key="topic.Id"
-                                    :label="topic.Name"
+                                    :label="topic.Title"
                                     :value="topic.Id"
                                 />
                             </el-select>
@@ -271,15 +271,35 @@ const coursesList = ref<any[]>([])
 const classList = ref<any[]>([])
 const topicList = ref<any[]>([])
 
-// 快捷问题
-const quickQuestions = ref<string[]>([
-    '帮我分析这个班级的报告中是否存在抄袭',
-    '哪个 topic 的报告可能有相似问题',
-    '找出相似度最高的报告对'
-])
-
 // 获取用户角色
 const userRole = computed(() => userStore.role)
+
+// 根据角色显示不同的快捷问题
+const quickQuestions = computed(() => {
+    if (userRole.value.includes('ADMIN')) {
+        return [
+            '帮我统计整个系统的报告提交情况',
+            '找出全校范围内相似度最高的报告对',
+            '分析各班级的报告质量分布情况'
+        ]
+    } else if (userRole.value.includes('TEACHER')) {
+        return [
+            '帮我分析这个班级的报告中是否存在抄袭',
+            '哪个 topic 的报告可能有相似问题',
+            '找出相似度最高的报告对'
+        ]
+    } else if (userRole.value.includes('STUDENT')) {
+        return [
+            '帮我检查我的报告是否存在格式问题',
+            '我的报告和同学的报告相似度高吗',
+            '帮我改进我的报告内容'
+        ]
+    }
+    return [
+        '你好，能帮我什么？',
+        '如何使用这个系统'
+    ]
+})
 
 // 加载课程列表
 const loadCourses = async () => {
