@@ -1,13 +1,13 @@
 <template>
     <el-container class="container">
-      <el-header id="header">
+      <el-header id="header" class="fixed-header">
         <Navbar />
       </el-header>
-      <el-container>
-        <el-aside id="aside">
+      <el-container class="main-container">
+        <el-aside id="aside" class="fixed-aside">
         <Aside :name="userStore.name" :id="userStore.id"/>
         </el-aside>
-        <el-main>
+        <el-main class="scrollable-main">
           <!-- 面包屑导航 -->
           <div class="breadcrumb-container">
             <Breadcrumb />
@@ -30,15 +30,51 @@ const userStore = useUserStore()
   padding: 0px;
   height: 55px;
 }
-#aside{
-  width:215px;
+
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+#aside{
+  width: 215px;
+}
+
+.fixed-aside {
+  position: fixed;
+  top: 55px;
+  left: 0;
+  bottom: 0;
+  z-index: 999;
+  overflow-y: auto;
+  background-color: #fff;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
 .container{
   width: 100%;
   height: 100%;
-  margin:0px;
+  margin: 0px;
   padding: 0px;
   border: 0px;
+}
+
+.main-container {
+  margin-top: 55px;
+  margin-left: 215px;
+  min-height: calc(100vh - 55px);
+}
+
+.scrollable-main {
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #f5f5f5;
+  min-height: calc(100vh - 55px);
 }
 
 .breadcrumb-container {

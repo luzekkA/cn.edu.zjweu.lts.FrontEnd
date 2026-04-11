@@ -17,13 +17,33 @@
             <canvas id="myChart" style="width: 400px; height: 400px;"></canvas>
         </el-col>
         <el-col :span="16" style="text-align: left;">
-            <el-table :data="allStudentList" style="width: 100%">
-                <el-table-column prop="Id" label="Id" />
+            <el-table :data="tableData" style="width: 100%">
+                <el-table-column prop="Id" label="Id" sortable />
                 <el-table-column prop="UserName" label="用户名" />
-                <el-table-column label="提交情况">
+                <el-table-column label="分数" sortable :sort-method="sortByScore">
                     <template #default="scope">
-                        <div v-if="reportedStudentList.some((student: any) => student.Id === scope.row.Id)">
-                            {{ reportedStudentList.find((student: any) => student.Id === scope.row.Id)?.Report[reportedStudentList.find((student: any) => student.Id === scope.row.Id).Report.length-1].Status }}
+                        <div v-if="scope.row.hasReport">
+                            {{ scope.row.score }}
+                        </div>
+                        <div v-else>
+                            -
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="相似度" sortable :sort-method="sortBySimilarity">
+                    <template #default="scope">
+                        <div v-if="scope.row.hasReport">
+                            {{ (scope.row.similarity * 100).toFixed(2) }}%
+                        </div>
+                        <div v-else>
+                            -
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="提交情况" sortable :sort-method="sortByStatus">
+                    <template #default="scope">
+                        <div v-if="scope.row.hasReport">
+                            {{ scope.row.status }}
                         </div>
                         <div v-else>
                             未提交
@@ -35,7 +55,7 @@
                         <router-link :to="{
                             path: '/Teacher/ReportDetail',
                             query: {
-                                ReportId: reportedStudentList.find((student: any) => student.Id === scope.row.Id)?.Report[reportedStudentList.find((student: any) => student.Id === scope.row.Id).Report.length-1].Id,
+                                ReportId: scope.row.reportId,
                                 CourseId: CourseId,
                                 CourseName: CourseName,
                                 ClassId: ClassId,
@@ -44,10 +64,8 @@
                                 UserName: scope.row.UserName
                             }
                         }">
-                        <!-- <router-link :to="{ path: '/Teacher/ReportDetail', query: { TopicId: 1 } }"> -->
-                            <!-- this is report {{ reportedStudentList.find((student: any) => student.Id === scope.row.Id).Report[reportedStudentList.find((student: any) => student.Id === scope.row.Id).Report.length-1].Id }} -->
                             <el-button type="primary" size="large" @click=""
-                                :disabled="!reportedStudentList.some((student: any) => student.Id === scope.row.Id)">
+                                :disabled="!scope.row.hasReport">
                                 获取报告详情
                             </el-button>
                         </router-link>
@@ -77,7 +95,7 @@
 </template>
 
 <script setup lang='ts'>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { getReportList, getStudentByClassId, CaclSimilarity } from '../../../api/teacher'
 import { devLog } from '../../../utils/devLog';
 import { useRoute } from 'vue-router'
@@ -86,17 +104,104 @@ import { ElMessage } from 'element-plus';
 import { UpdateTopic } from '../../../api/teacher';
 import Chart from 'chart.js/auto';
 
+// 类型定义
+interface Report {
+    Id: number;
+    Score: number;
+    Similarity: number;
+    Status: string;
+}
+
+interface ReportedStudent {
+    Id: number;
+    Report: Report[];
+}
+
+interface Student {
+    Id: number;
+    UserName: string;
+}
+
+interface StudentWithReport extends Student {
+    score: number | null;
+    similarity: number | null;
+    status: string | null;
+    reportId: number | null;
+    hasReport: boolean;
+}
+
 const userStore = useUserStore()
-let reportedStudentList = ref<any>([])
-let allStudentList = ref<any>([])
+let reportedStudentList = ref<ReportedStudent[]>([])
+let allStudentList = ref<Student[]>([])
 const changeFile = ref()
 let mytoken = ref('')
 mytoken.value = userStore.token
 const route = useRoute()
-const CourseId = route.query.CourseId
-const ClassId = route.query.ClassId
-const TopicId = route.query.TopicId
-const CourseName = route.query.CourseName
+const CourseId = Number(route.query.CourseId)
+const ClassId = Number(route.query.ClassId)
+const TopicId = Number(route.query.TopicId)
+const CourseName = route.query.CourseName as string
+
+// 预处理数据：创建学生ID到报告的映射
+const studentReportMap = computed(() => {
+    const map = new Map<number, {
+        score: number;
+        similarity: number;
+        status: string;
+        reportId: number;
+    }>();
+    reportedStudentList.value.forEach((student: ReportedStudent) => {
+        if (student.Report && student.Report.length > 0) {
+            const latestReport = student.Report[student.Report.length - 1];
+            map.set(student.Id, {
+                score: latestReport.Score,
+                similarity: latestReport.Similarity,
+                status: latestReport.Status,
+                reportId: latestReport.Id
+            });
+        }
+    });
+    return map;
+});
+
+// 获取学生的最新报告信息
+const getStudentReport = (studentId: number) => {
+    return studentReportMap.value.get(studentId);
+};
+
+// 合并后的表格数据
+const tableData = computed(() => {
+    return allStudentList.value.map((student: Student): StudentWithReport => {
+        const report = getStudentReport(student.Id);
+        return {
+            ...student,
+            score: report?.score ?? null,
+            similarity: report?.similarity ?? null,
+            status: report?.status ?? null,
+            reportId: report?.reportId ?? null,
+            hasReport: !!report
+        };
+    });
+});
+
+// 自定义排序方法
+const sortByScore = (a: StudentWithReport, b: StudentWithReport) => {
+    if (a.score === null) return 1; // 没有分数的放在后面
+    if (b.score === null) return -1; // 没有分数的放在后面
+    return (a.score || 0) - (b.score || 0);
+};
+
+const sortBySimilarity = (a: StudentWithReport, b: StudentWithReport) => {
+    if (a.similarity === null) return 1; // 没有相似度的放在后面
+    if (b.similarity === null) return -1; // 没有相似度的放在后面
+    return (a.similarity || 0) - (b.similarity || 0);
+};
+
+const sortByStatus = (a: StudentWithReport, b: StudentWithReport) => {
+    const statusA = a.status || '';
+    const statusB = b.status || '';
+    return statusA.localeCompare(statusB, 'zh-CN');
+};
 
 // let submissionData: {
 //     '已提交': 10,
@@ -135,27 +240,25 @@ onMounted(async () => {
     });
 
 })
-const currentTopicId = ref()
-const upload = (uploadInfo: any) => {
+const currentTopicId = ref<number>()
+const upload = (uploadInfo: { file: File }) => {
     const { file } = uploadInfo;
     let formData = new FormData();
     formData.append("file", file);
-    formData.append("topicId", currentTopicId.value);
+    formData.append("topicId", currentTopicId.value?.toString() ?? '');
     UpdateTopic(formData).then(data => {
-        devLog("this is data", data)
+        devLog("this is data", data);
 
         if (data.data.code == 200) {
-            ElMessage.success('上传成功')
+            ElMessage.success('上传成功');
+        } else {
+            ElMessage.error('上传失败');
         }
-        else {
-            ElMessage.error('上传失败')
-        }
-    }
-    ).catch(error => {
-        ElMessage.error('上传失败')
+    }).catch(error => {
+        ElMessage.error('上传失败');
         console.error('上传失败', error);
     });
-}
+};
 
 const calculate = () => {
     let formData = new FormData();
