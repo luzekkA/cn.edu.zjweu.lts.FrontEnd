@@ -110,3 +110,12 @@ export function makeScore(formData:any) {
         data:formData
     })
 }
+
+export function downloadTopicArchive(courseId: any, classId: any, topicId: any) {
+    return request({
+        url: '/Teacher/DownloadTopicArchive',
+        method: 'get',
+        params: { courseId, classId, topicId },
+        responseType: 'blob'
+    })
+}

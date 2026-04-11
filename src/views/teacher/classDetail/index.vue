@@ -1,6 +1,6 @@
-<template>
+﻿<template>
     <el-col :span="6" style="text-align: left;">
-        <el-button @click="rightPart = true">从题库布置题目</el-button>
+        <el-button @click="rightPart = true">从题库布置题</el-button>
     </el-col>
     <el-table :data="topicList" style="width: 100%;">
         <el-table-column prop="Id" label="Id" width="100px" />
@@ -28,6 +28,14 @@
                         查看提交情况
                     </el-button>
                 </router-link>
+                <el-button
+                    style="margin-left: 8px;"
+                    :loading="downloadingTopicId === scope.row.Id"
+                    :disabled="downloadingTopicId === scope.row.Id"
+                    @click="handleDownloadTopicArchive(scope.row.Id, scope.row.Title)"
+                >
+                    下载题目附件
+                </el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -41,14 +49,14 @@
                     <el-button size="large" @click="preview(scope.row.Text)">
                         文件预览
                     </el-button>
-                </template>
+            </template>
             </el-table-column>
             <el-table-column label="操作">
                 <template #default="scope">
                     <el-button type="primary" size="large" @click="addTopicToClass(scope.row.Id)">
-                        添加到班级
+                        添加到班�?
                     </el-button>
-                </template>
+            </template>
             </el-table-column>
         </el-table>
     </el-drawer>
@@ -72,9 +80,9 @@
 
 <script setup lang='ts'>
 import { onMounted, ref } from 'vue'
-import { getTopicList, getTopics, AddTopics } from '../../../api/teacher'
+import { getTopicList, getTopics, AddTopics, downloadTopicArchive } from '../../../api/teacher'
 import { devLog } from '../../../utils/devLog';
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '../../../store/useUserStore';
 import VueOfficeExcel from '@vue-office/excel/lib/v3/index.js'
 import VueOfficeDocx from '@vue-office/docx/lib/v3/index.js'
@@ -84,7 +92,7 @@ import VueOfficePdf from '@vue-office/pdf/lib/v3/index.js'
 import { ElMessage } from 'element-plus'
 
 
-//分页用
+//分页�?
 const currentPage = ref(1)
 const total = ref(1)
 
@@ -96,9 +104,11 @@ const rightPart = ref()
 let mytoken = ref('')
 mytoken.value = userStore.token
 const route = useRoute()
+const router = useRouter()
 const CourseId = route.query.CourseId
 const ClassId = route.query.ClassId
 const CourseName = route.query.CourseName
+const downloadingTopicId = ref<number | string | null>(null)
 
 const options = {
     xls: false, //预览xlsx文件设为false；预览xls文件设为true
@@ -162,6 +172,86 @@ const addTopicToClass = (topicId: string) => {
 
 }
 
+const parseDownloadError = async (errorData: any) => {
+    try {
+        const text = await errorData?.text?.();
+        if (!text) return '下载失败';
+        const json = JSON.parse(text);
+        return json?.msg || '下载失败';
+    } catch {
+        return '下载失败';
+    }
+}
+
+const getFileNameFromDisposition = (disposition: string) => {
+    const match = disposition.match(/filename\*=UTF-8''([^;]+)|filename=\"?([^\";]+)\"?/i);
+    const rawName = match?.[1] || match?.[2];
+    if (!rawName) return '';
+    try {
+        return decodeURIComponent(rawName);
+    } catch {
+        return rawName;
+    }
+}
+
+const buildFallbackArchiveName = (topicTitle?: string) => {
+    const safeCourseName = String(CourseName || '').trim().replace(/[\\/:*?"<>|]/g, '_');
+    const safeClassId = String(ClassId || '').trim().replace(/[\\/:*?"<>|]/g, '_');
+    const safeTopicTitle = String(topicTitle || '').trim().replace(/[\\/:*?"<>|]/g, '_');
+    const parts = [safeCourseName, safeClassId, safeTopicTitle].filter(Boolean);
+    const prefix = parts.join('_');
+    return `${prefix || 'archive'}_archive.zip`;
+}
+
+const handleDownloadTopicArchive = async (topicId: number | string, topicTitle?: string) => {
+    if (downloadingTopicId.value === topicId) return;
+    downloadingTopicId.value = topicId;
+
+    try {
+        const res = await downloadTopicArchive(CourseId, ClassId, topicId);
+        const contentType = String(res?.headers?.['content-type'] || '').toLowerCase();
+
+        if (contentType.includes('application/json')) {
+            const message = await parseDownloadError(res.data);
+            throw new Error(message);
+        }
+
+        const disposition = String(
+            res?.headers?.['content-disposition']
+            || res?.headers?.['Content-Disposition']
+            || ''
+        );
+        const fileName = getFileNameFromDisposition(disposition) || buildFallbackArchiveName(topicTitle);
+
+        const blobUrl = URL.createObjectURL(res.data);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(blobUrl);
+
+        ElMessage.success('下载成功');
+    } catch (error: any) {
+        if (error?.response?.status === 401) {
+            ElMessage.error('登录状态失效，请重新登录');
+            router.push('/');
+            return;
+        }
+
+        if (error?.response?.data instanceof Blob) {
+            const message = await parseDownloadError(error.response.data);
+            ElMessage.error(message);
+            return;
+        }
+
+        ElMessage.error(error?.message || '下载失败');
+    } finally {
+        downloadingTopicId.value = null;
+    }
+}
+
 const handleCurrentChange = () => {
     getTopicList(CourseId, ClassId,currentPage.value).then(data => {
         topicList.value = data.data.data.Items
@@ -173,3 +263,7 @@ const handleCurrentChange = () => {
 }
 </script>
 <style></style>
+
+
+
+
