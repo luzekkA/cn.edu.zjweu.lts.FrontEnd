@@ -3,12 +3,6 @@
         <!-- 顶部快捷操作区 -->
         <div class="quick-actions">
             <el-button
-                :type="agentStore.currentMode === 'normal' ? 'primary' : 'default'"
-                @click="switchToNormalMode"
-            >
-                普通问答
-            </el-button>
-            <el-button
                 :type="agentStore.currentMode === 'similarity' ? 'primary' : 'default'"
                 @click="switchToSimilarityMode"
             >
@@ -18,7 +12,7 @@
         </div>
 
         <!-- 高级筛选区（可折叠） -->
-        <div class="filter-section">
+        <div class="filter-section"  v-if="!isStudent">
             <el-collapse v-model="filterVisible">
                 <el-collapse-item title="高级筛选" name="filter">
                     <el-form :inline="true" label-width="80px">
@@ -38,7 +32,7 @@
                                 />
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="班级">
+                        <el-form-item v-if="!isStudent" label="班级">
                             <el-select
                                 v-model="agentStore.filterOptions.classId"
                                 placeholder="请选择班级"
@@ -54,7 +48,7 @@
                                 />
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="题目">
+                        <el-form-item v-if="!isStudent" label="题目">
                             <el-select
                                 v-model="agentStore.filterOptions.topicId"
                                 placeholder="请选择题目"
@@ -273,6 +267,7 @@ const topicList = ref<any[]>([])
 
 // 获取用户角色
 const userRole = computed(() => userStore.role)
+const isStudent = computed(() => userRole.value.includes('STUDENT'))
 
 // 根据角色显示不同的快捷问题
 const quickQuestions = computed(() => {
@@ -340,6 +335,7 @@ const loadClasses = async (courseId: number) => {
             const res = await api.getClassList(courseId, 1, 1000)
             classList.value = res.data.data?.Items || []
         }
+        // STUDENT 无班级接口，跳过
     } catch (error) {
         devLog('加载班级列表失败', error)
     }

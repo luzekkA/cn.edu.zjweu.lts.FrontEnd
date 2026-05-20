@@ -20,8 +20,8 @@
             </el-row>
             <el-row>
                 <el-button style="margin-left: 50px;" type="primary" @click="downloadFile(text)">下载文件</el-button>
+				<el-button v-if="!reportStatus" @click="rightPart = true">上传报告</el-button>
             </el-row>
-            <el-button v-if="!reportStatus" @click="rightPart = true">上传报告</el-button>
             <el-button v-if="reportStatus" @click="rightPartUpdate = true;">
                 更新报告
             </el-button>

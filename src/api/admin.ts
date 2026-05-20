@@ -117,3 +117,66 @@ export function updateTeacherInfo(teacherInfo:any){
         data:teacherInfo
     })
 }
+
+// 获取班级详情
+export function getClassInfo(classId: number) {
+    return request({
+        url: '/Admin/GetClassInfo',
+        method: 'get',
+        params: { classId }
+    })
+}
+
+// 修改班级
+export function updateClass(classData: { classId: number; grade: number; name: string; courseIds: number[] }) {
+    return request({
+        url: '/Admin/UpdateClass',
+        method: 'put',
+        data: classData
+    })
+}
+
+// 新建班级
+export function addClass(classData: { name: string; grade: number }) {
+    return request({
+        url: '/Admin/AddClass',
+        method: 'post',
+        data: classData
+    })
+}
+
+// 获取课程详情
+export function getCourseInfo(courseId: number) {
+    return request({
+        url: '/Admin/GetCourseInfo',
+        method: 'get',
+        params: { courseId }
+    })
+}
+
+// 单条添加课程
+export function addCourse(courseData: { name: string; teacherIds?: string[]; classIds?: number[] }) {
+    return request({
+        url: '/Admin/AddCourse',
+        method: 'post',
+        data: courseData
+    })
+}
+
+// 修改课程
+export function updateCourse(courseData: { courseId: number; name: string; teacherIds?: string[]; classIds?: number[] }) {
+    return request({
+        url: '/Admin/UpdateCourse',
+        method: 'put',
+        data: courseData
+    })
+}
+
+// 获取所有教师
+export function getAllTeachers(pageNumber: number, pageSize = 10) {
+    return request({
+        url: '/Admin/GetAllTeachers',
+        method: 'get',
+        params: { pageNumber, pageSize }
+    })
+}
