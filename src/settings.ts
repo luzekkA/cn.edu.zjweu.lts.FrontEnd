@@ -12,7 +12,7 @@ export enum Env{
     Pro = 'pro'
  }
 export const settings:Settings ={
-    title:'院内实验实训系统',
+    title:'实验实训智能管理系统',
     env:Env.Mock,
     baseURL:"http://121.40.35.81:8085",
     mockURL:'http://127.0.0.1:5223/api',
